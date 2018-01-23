@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -20,9 +22,21 @@ public class ApiController {
     @Value("${server.port}")
     private String port;
 
-    @RequestMapping(value = "/say")
-    public String index() {
+    @RequestMapping(value = "/calculate", method = RequestMethod.GET)
+    public String calculate(@RequestParam(name = "num") int num) {
         LOG.info(port + " get access...");
-        return port + " say hello!";
+        int result = fib(num);
+        return port + " calculate fib(" + num + ") = " + result;
+    }
+
+    /**
+     * 计算fib结果
+     * @param n
+     * @return
+     */
+    private int fib(int n) {
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        return fib(n - 1) + fib(n - 2);
     }
 }
