@@ -1,12 +1,10 @@
 package com.zhaoyh.controller;
 
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by zhaoyh on 2018/1/5
@@ -22,11 +20,20 @@ public class ApiController {
     @Value("${server.port}")
     private String port;
 
-    @RequestMapping(value = "/calculate", method = RequestMethod.GET)
-    public String calculate(@RequestParam(name = "num") int num) {
+    @GetMapping(value = "/testZuul")
+    public String testZuul() {
+        return "zuul->server " + port;
+    }
+
+    @GetMapping(value = "/calculate")
+    public String calculate(@RequestParam(name = "num") int num) throws InterruptedException {
         LOG.info(port + " get access...");
         int result = fib(num);
-        return port + " calculate fib(" + num + ") = " + result;
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("result", result);
+        jsonObject.addProperty("port", port);
+        // Thread.sleep(6000);
+        return jsonObject.toString();
     }
 
     /**
@@ -35,8 +42,9 @@ public class ApiController {
      * @return
      */
     private int fib(int n) {
-        if (n == 0) return 0;
-        if (n == 1) return 1;
+        if (n == 0 || n == 1) {
+            return n;
+        }
         return fib(n - 1) + fib(n - 2);
     }
 }
